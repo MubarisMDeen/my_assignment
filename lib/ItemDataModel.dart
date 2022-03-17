@@ -1,14 +1,14 @@
 class ItemDataModel {
-  String name;
-  int id;
-  int price;
-  int available;
-  String vendor;
-  String category;
-  String imageurl;
+  String? name;
+  int? id;
+  int? price;
+  int? available;
+  String? vendor;
+  String? category;
+  String? imageurl;
 
-  ItemDataModel(
-      {this.name,
+  ItemDataModel({
+      this.name,
       this.id,
       this.price,
       this.available,
@@ -16,7 +16,7 @@ class ItemDataModel {
       this.category,
       this.imageurl});
 
-  ItemDataModel.fromJson(map<String,dynamic> json){
+  ItemDataModel.fromJson(Map<String,dynamic> json){
     name = json['name'];
     id = json['id'];
     price = json['price'];
