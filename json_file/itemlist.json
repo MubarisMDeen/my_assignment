@@ -1,0 +1,38 @@
+[ 
+{ 
+"name":"Potato", 
+"id":1, 
+"price":30, 
+"available":1, 
+"vendor":"Himachal Pvt Ltd", 
+"category":"Vegtables",
+"imareurl":"https://media.istockphoto.com/photos/three-potatoes-picture-id157430678?k=20&m=157430678&s=612x612&w=0&h=dfYLuPYwA50ojI90hZ4jCgKZd5TGnqf24UCVBszoZIA="
+}, 
+{
+"name":"Banana", 
+"id":2, 
+"price":50, 
+"available":1, 
+"category":"Fruits",
+"vendor": "Organic farms",
+"imareurl":"https://media.istockphoto.com/photos/banana-picture-id1184345169?k=20&m=1184345169&s=612x612&w=0&h=EKwCw7Zx20N3l8G_rQI6KcitWTQ5ahkgmEBr2QA1FMk="
+}, 
+{ 
+"name":"Drumsticks", 
+"id":3, 
+"price":20, 
+"available":0, 
+"category":"Vegetables", 
+"vendor":"Mallikarjuna farms",
+"imareurl":"http://specialtyproduce.com/sppics/11503.png"
+}, 
+{ 
+"name":"Orange", 
+"id":4, 
+"price":25, 
+"available":1, 
+"vendor":"Nagpur farms", 
+"category":"Fruits",
+"imareurl":"https://static8.depositphotos.com/1020804/884/i/600/depositphotos_8840885-stock-photo-orange-fruits-on-a-white.jpg"
+} 
+] 
