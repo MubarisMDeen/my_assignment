@@ -2,7 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:my_assignment/ItemDataModel.dart';
 import 'package:flutter/services.dart' as rootBundle;
-import 'package:my_assignment/filterScreen.dart';
+import 'package:my_assignment/showDialogFunc.dart';
+
+int stateIndex = 1;
+bool? fruitBoxValue = true;
+bool? vegBoxValue = true;
 
 void main() {
   runApp(const MyApp());
@@ -58,14 +62,27 @@ class _MyHomePageState extends State<MyHomePage> {
           if (data.hasError)
             return Center(child: Text("${data.error}"));
           else if (data.hasData) {
-            var items = data.data as List<ItemDataModel>;
+            var itemso = data.data as List<ItemDataModel>;
+            List<ItemDataModel>  items = itemso.where((element) => element.category=="Fruits"||element.category=="Vegetables").toList();
+            //List<ItemDataModel> filteredItems;
+            void updateState(int stateIndex) {
+              setState(() {
+                if(stateIndex==1)
+                  List<ItemDataModel>  items = itemso.where((element) => element.category=="Fruits"||element.category=="Vegetables").toList();
+                if(stateIndex==2)
+                  List<ItemDataModel>  items = itemso.where((element) => element.category=="Fruits").toList();
+                if(stateIndex==1)
+                  List<ItemDataModel>  items = itemso.where((element) => element.category=="Vegetables").toList();
+              });
+            }
+
             return ListView.builder(
                 itemCount: items == null ? 0 : items.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
                       // This Will Call When User Click On ListView Item
-                      showDialogFunc(
+                      ShowDialogFunc(
                           context,
                           items[index].imageurl.toString(),
                           items[index].name.toString(),
@@ -165,71 +182,65 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-showDialogFunc(context, img, title, cost, vend) {
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return Center(
-        child: Material(
-          type: MaterialType.transparency,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
-            ),
-            padding: EdgeInsets.all(15),
-            height: 620,
-            width: MediaQuery.of(context).size.width * 0.9,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+
+class FilterScreen extends StatefulWidget {
+  const FilterScreen({Key? key}) : super(key: key);
+
+  @override
+  State<FilterScreen> createState() => _FilterScreenState();
+}
+
+class _FilterScreenState extends State<FilterScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Filter Items",
+          style: TextStyle(color: Colors.white),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.grey,
+      ),
+      body: Container(
+        padding: EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Row(
               children: [
-                ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image(
-                      image: NetworkImage(img),
-                    )),
-                SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 35,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  vend,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  // width: 200,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      cost,
-                      maxLines: 3,
-                      style: TextStyle(fontSize: 35, color: Colors.redAccent,fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
+                Checkbox(
+                    value: fruitBoxValue,
+                    activeColor: Colors.grey,
+                    onChanged: (newValue) {
+                      setState(() {
+                        fruitBoxValue = newValue;
+                        if(fruitBoxValue==true&&vegBoxValue==true)stateIndex=1;
+                        if(fruitBoxValue==true&&vegBoxValue==false)stateIndex=2;
+                        if(fruitBoxValue==false&&vegBoxValue==true)stateIndex=3;
+
+                      });
+                    }),
+                SizedBox(width: 10,),
+                Text('Fruits',style: TextStyle(color: Colors.blueGrey, fontSize: 20),)
               ],
             ),
-          ),
+            Row(
+              children: [
+                Checkbox(
+                    value: vegBoxValue,
+                    activeColor: Colors.grey,
+                    onChanged: (newValue) {
+                      setState(() {
+                        vegBoxValue = newValue;
+                      });
+                    }),
+                SizedBox(width: 10,),
+                Text('Vegetables',style: TextStyle(color: Colors.blueGrey, fontSize: 20),)
+              ],
+            )
+          ],
         ),
-      );
-    },
-  );
+      ),
+    );
+  }
 }
