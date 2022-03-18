@@ -4,9 +4,15 @@ import 'package:my_assignment/ItemDataModel.dart';
 import 'package:flutter/services.dart' as rootBundle;
 import 'package:my_assignment/showDialogFunc.dart';
 
+
 int stateIndex = 1;
 bool? fruitBoxValue = true;
 bool? vegBoxValue = true;
+
+List<ItemDataModel> list = [];
+List<ItemDataModel>? items;
+List<ItemDataModel> itemso = [];
+
 
 void main() {
   runApp(const MyApp());
@@ -35,6 +41,35 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  Future<List<ItemDataModel>> ReadJsonData() async {
+    final jsonData =
+    await rootBundle.rootBundle.loadString('json_file/itemlist.json');
+    final list = json.decode(jsonData) as List<dynamic>;
+
+    return list.map((e) => ItemDataModel.fromJson(e)).toList();
+  }
+
+  void updateState(int stateIndex) {
+
+    setState(() {
+      print(stateIndex);
+      if (stateIndex == 1)
+        items = itemso
+            .where((element) =>
+        element.category == "Fruits" ||
+            element.category == "Vegetables")
+            .toList();
+      else if (stateIndex == 2)
+        items = itemso
+            .where((element) => element.category == "Fruits")
+            .toList();
+      else
+        items = itemso
+            .where((element) => element.category == "Vegetables")
+            .toList();
+    });}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Colors.grey,
             onPressed: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => FilterScreen()));
+                  MaterialPageRoute(builder: (context) => FilterScreen(updateState)));
             },
           )
         ],
@@ -63,18 +98,28 @@ class _MyHomePageState extends State<MyHomePage> {
             return Center(child: Text("${data.error}"));
           else if (data.hasData) {
             var itemso = data.data as List<ItemDataModel>;
-            List<ItemDataModel>  items = itemso.where((element) => element.category=="Fruits"||element.category=="Vegetables").toList();
+            List<ItemDataModel> items = itemso
+                .where((element) =>
+                    element.category == "Fruits" ||
+                    element.category == "Vegetables")
+                .toList();
+            if (stateIndex == 1)
+              items = itemso
+                  .where((element) =>
+              element.category == "Fruits" ||
+                  element.category == "Vegetables")
+                  .toList();
+            else if (stateIndex == 2)
+              items = itemso
+                  .where((element) => element.category == "Fruits")
+                  .toList();
+            else
+              items = itemso
+                  .where((element) => element.category == "Vegetables")
+                  .toList();
             //List<ItemDataModel> filteredItems;
-            void updateState(int stateIndex) {
-              setState(() {
-                if(stateIndex==1)
-                  List<ItemDataModel>  items = itemso.where((element) => element.category=="Fruits"||element.category=="Vegetables").toList();
-                if(stateIndex==2)
-                  List<ItemDataModel>  items = itemso.where((element) => element.category=="Fruits").toList();
-                if(stateIndex==1)
-                  List<ItemDataModel>  items = itemso.where((element) => element.category=="Vegetables").toList();
-              });
-            }
+
+
 
             return ListView.builder(
                 itemCount: items == null ? 0 : items.length,
@@ -119,11 +164,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                     Padding(
                                       padding:
                                           EdgeInsets.only(left: 5, right: 5),
-                                      child: Text(
-                                        items[index].name.toString(),
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            items[index].name.toString(),
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          if (items[index].available == 0)
+                                            Text("*Out of Stock*",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.deepOrange),),
+                                        ],
                                       ),
                                     ),
                                     Padding(
@@ -158,7 +212,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   );
-                });
+                }
+
+                );
           } else
             return Center(
               child: CircularProgressIndicator(),
@@ -169,22 +225,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-
-  Future<List<ItemDataModel>> ReadJsonData() async {
-    final jsonData =
-        await rootBundle.rootBundle.loadString('json_file/itemlist.json');
-    final list = json.decode(jsonData) as List<dynamic>;
-
-    return list.map((e) => ItemDataModel.fromJson(e)).toList();
-  }
 }
 
-
-
-
-
 class FilterScreen extends StatefulWidget {
-  const FilterScreen({Key? key}) : super(key: key);
+  final Function updateState;
+
+
+  FilterScreen(this.updateState);
 
   @override
   State<FilterScreen> createState() => _FilterScreenState();
@@ -214,14 +261,23 @@ class _FilterScreenState extends State<FilterScreen> {
                     onChanged: (newValue) {
                       setState(() {
                         fruitBoxValue = newValue;
-                        if(fruitBoxValue==true&&vegBoxValue==true)stateIndex=1;
-                        if(fruitBoxValue==true&&vegBoxValue==false)stateIndex=2;
-                        if(fruitBoxValue==false&&vegBoxValue==true)stateIndex=3;
-
+                        print(fruitBoxValue);
+                        if (fruitBoxValue == true && vegBoxValue == true)
+                          stateIndex = 1;
+                        if (fruitBoxValue == true && vegBoxValue == false)
+                          stateIndex = 2;
+                        if (fruitBoxValue == false && vegBoxValue == true)
+                          stateIndex = 3;
+                        widget.updateState(stateIndex);
                       });
                     }),
-                SizedBox(width: 10,),
-                Text('Fruits',style: TextStyle(color: Colors.blueGrey, fontSize: 20),)
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  'Fruits',
+                  style: TextStyle(color: Colors.blueGrey, fontSize: 20),
+                )
               ],
             ),
             Row(
@@ -232,10 +288,23 @@ class _FilterScreenState extends State<FilterScreen> {
                     onChanged: (newValue) {
                       setState(() {
                         vegBoxValue = newValue;
+                        print(vegBoxValue);
+                        if (fruitBoxValue == true && vegBoxValue == true)
+                          stateIndex = 1;
+                        if (fruitBoxValue == true && vegBoxValue == false)
+                          stateIndex = 2;
+                        if (fruitBoxValue == false && vegBoxValue == true)
+                          stateIndex = 3;
+                        widget.updateState(stateIndex);
                       });
                     }),
-                SizedBox(width: 10,),
-                Text('Vegetables',style: TextStyle(color: Colors.blueGrey, fontSize: 20),)
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  'Vegetables',
+                  style: TextStyle(color: Colors.blueGrey, fontSize: 20),
+                )
               ],
             )
           ],
@@ -244,3 +313,5 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 }
+
+

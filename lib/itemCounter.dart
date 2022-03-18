@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:my_assignment/purchases.dart';
 
 class ItemCounter extends StatefulWidget {
   final String? title;
@@ -58,6 +60,9 @@ class _ItemCounterState extends State<ItemCounter> {
           ),
           ElevatedButton(
               onPressed: () {
+                Purchases purchases = Purchases(title.toString(), _counter);
+                String jsonPurchases = jsonEncode(purchases);
+                print(jsonPurchases);
                 showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
